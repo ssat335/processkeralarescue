@@ -19,6 +19,7 @@ colors = {
 }
 
 app = dash.Dash()
+server = app.server
 
 def get_layout():
     layout = html.Div(style={'backgroundColor': colors['background']},

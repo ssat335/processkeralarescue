@@ -25,7 +25,7 @@ def get_layout():
         children=[
             html.Div(
                 children =[
-                    html.H1(
+                    html.H3(
                         children='Kerala Rescue Dashboard',
                         style={
                         'textAlign': 'left',
@@ -38,8 +38,6 @@ def get_layout():
                         'color': colors['text'],
                     }),
                     html.Br(),
-                    html.Div(
-                        children=[
                             html.Div(
                                 children=[
                                     html.Div(
@@ -106,23 +104,12 @@ def get_layout():
                                 className='row'
                             ),
 
-                        ],
-                        style = {
-                               'border-radius': '15px 50px',
-                               'margin-top': '10px',
-                               'padding': '75px',
-                               'box-shadow': '3px 3px 30px rgba(0, 0, 0, 0.1)',
-                               'background': '#fff',
-                        }
-                    ),
-
                     html.Div([
                         html.Pre(id='hover-data', style={'paddingTop':35})
                         ], style={'width':'30%'})
                     ],
-                    # className='container',
                     style={
-                    'padding': '50px',
+                    'padding': '5px',
                     }
                 ),
             ]
@@ -183,13 +170,6 @@ def update_bar(dr_value, rad_value):
             ],
             layout=go.Layout(
                 barmode='grouped',
-                # margin=go.Margin(
-                #     l=280,
-                #     r=0,
-                #     b=0,
-                #     t=40,
-                #     pad=4,
-                # ),
                 bargroupgap=0.2,
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'

@@ -11,7 +11,6 @@ import json
 
 import pandas as pd
 from data_reader import data_reader
-from datetime import datetime
 
 count = 0
 colors = {
@@ -28,12 +27,10 @@ def get_hover_data(df):
     :param df: Pandas dataframe
     :return: list: A string of dataframe row information formatted for hover.
     """
-    details_labels = ["needcloth", "needfood", "needkit_util", "needmed", "needothers", "needrescue", "needtoilet",
-                      "needwater", "detailcloth" ,"detailfood","detailkit_util","detailmed","detailrescue",
-                      "detailtoilet" ,"detailwater"]
+    details_labels = ["needothers","detailmed", "detailrescue"]
     hover_string_list = []
     for index, row in df.iterrows():
-        info_string = row['location'] + "<br>" + "Phone:" +row['requestee_phone'] + "<br>" + datetime.strftime(row['datetime'], "%d-%m-%y %H:%M:%S") + "<br>"
+        info_string = row['location'] + "<br>" + "Phone:" +row['requestee_phone'] + "<br>"
         details_string_list = []
         for i in details_labels:
             if row[i]:

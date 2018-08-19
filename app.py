@@ -85,9 +85,9 @@ def get_layout():
                                             options=[
                                                 dict( label='All', value='All' ),
                                                 dict( label='Requested within last 3 hours', value='requested_within_3_hours' ),
-                                                dict( label='Requested Today', value='requested_today' ),
-                                                dict( label='Requested Yesterday', value='requested_yesterday' ),
-                                                dict( label='Request 2 days back', value='2_days_back' ),
+                                                dict( label='Requested today', value='requested_today' ),
+                                                dict( label='Requested from yesterday', value='requested_yesterday' ),
+                                                dict( label='Old requests', value='2_days_back' ),
                                             ],
                                             labelStyle = dict(display='inline-block'),
                                             value='All'

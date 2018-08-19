@@ -11,6 +11,7 @@ import json
 
 import pandas as pd
 from data_reader import data_reader
+from datetime import datetime
 
 count = 0
 colors = {
@@ -18,6 +19,31 @@ colors = {
     'text': 'rgb(77, 99, 127)'
 }
 
+
+# HELPER METHODS
+
+def get_hover_data(df):
+    """
+    Creates and formats the hover string over the map data points
+    :param df: Pandas dataframe
+    :return: list: A string of dataframe row information formatted for hover.
+    """
+    details_labels = ["needcloth", "needfood", "needkit_util", "needmed", "needothers", "needrescue", "needtoilet",
+                      "needwater", "detailcloth" ,"detailfood","detailkit_util","detailmed","detailrescue",
+                      "detailtoilet" ,"detailwater"]
+    hover_string_list = []
+    for index, row in df.iterrows():
+        info_string = row['location'] + "<br>" + "Phone:" +row['requestee_phone'] + "<br>" + datetime.strftime(row['datetime'], "%d-%m-%y %H:%M:%S") + "<br>"
+        details_string_list = []
+        for i in details_labels:
+            if row[i]:
+                details_string_list.append(i + ":" + str(row[i]).strip())
+        details_string = "<br>".join(details_string_list)
+        hover_string_list.append(info_string + details_string)
+    return hover_string_list
+
+
+# DASH APP
 app = dash.Dash()
 server = app.server
 
@@ -129,6 +155,7 @@ def update_map(dr_value, rad_value):
                 lon=df['LonValid'].tolist(),
                 mode='markers',
                 hoverinfo='text',
+                text=get_hover_data(df),
                 marker=dict(
                     size=10,
                     color = 'rgba(255, 77, 77, 0.5)',

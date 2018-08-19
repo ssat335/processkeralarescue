@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ssat335/processkeralarescue.svg?branch=master)](https://travis-ci.org/ssat335/processkeralarescue)
+
 # processkeralarescue
 Repository aims to develop a dashboard to optimise and sort rescue operations. See initial implementation in
 https://processkeralarescue.herokuapp.com/.

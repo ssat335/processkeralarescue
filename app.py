@@ -10,7 +10,7 @@ import numpy as np
 import json
 
 import pandas as pd
-from data_reader import data_reader
+from data_reader.DataReader import DataReader
 
 count = 0
 colors = {
@@ -43,6 +43,8 @@ def get_hover_data(df):
 # DASH APP
 app = dash.Dash()
 server = app.server
+
+data_cl = DataReader('data/data.json')
 
 def get_layout():
     layout = html.Div(style={'backgroundColor': colors['background']},
@@ -181,7 +183,7 @@ app.layout = get_layout()
 @app.callback(Output("map-graph", "figure"),
               [Input("incident_dropdown", "value"), Input('charts_radio', 'value')])
 def update_map(dr_value, rad_value):
-    df = data_reader.get_plot_data(dr_value, rad_value)
+    df = data_cl.get_plot_data(dr_value, rad_value)
     return go.Figure(
             data=[go.Scattermapbox(
                 lat=df['LatValid'].tolist(),
@@ -216,7 +218,7 @@ def update_map(dr_value, rad_value):
 @app.callback(Output("graph-bar", "figure"),
               [Input("incident_dropdown", "value"), Input('charts_radio', 'value')])
 def update_bar(dr_value, rad_value):
-    df = data_reader.get_plot_data(dr_value, rad_value)
+    df = data_cl.get_plot_data(dr_value, rad_value)
     d_series = df.groupby('district').count()
     d_series.sort_values(['id'], ascending=0, inplace=True)
     return go.Figure(
@@ -245,7 +247,7 @@ def update_bar(dr_value, rad_value):
      Input('charts_radio', 'value'), Input('graph-bar', 'clickData')])
 def update_bar_location(dr_value, rad_value, clickData):
     district = clickData['points'][0]['x']
-    df = data_reader.get_plot_per_dist(dr_value, rad_value, district)
+    df = data_cl.get_plot_per_dist(dr_value, rad_value, district)
     d_series = df.groupby('location').count()
     d_series.sort_values(['id'], ascending=0, inplace=True)
     return go.Figure(
@@ -273,7 +275,7 @@ def update_bar_location(dr_value, rad_value, clickData):
               [Input("incident_dropdown", "value"), Input('charts_radio', 'value'), Input('graph-bar-2', 'clickData')])
 def update_map(dr_value, rad_value, clickData):
     location = clickData['points'][0]['x']
-    df = data_reader.get_plot_per_loc(dr_value, rad_value, location)
+    df = data_cl.get_plot_per_loc(dr_value, rad_value, location)
     return go.Figure(
             data=[go.Scattermapbox(
                 lat=df['LatValid'].tolist(),

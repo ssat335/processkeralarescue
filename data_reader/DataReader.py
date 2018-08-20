@@ -59,7 +59,6 @@ class DataReader:
             return 10000
 
     def get_plot_data(self,list_requirements, rad_value):
-        print(self.df)
         df = self.df
         # we check based on the dropdown
         list_requirements = list_requirements

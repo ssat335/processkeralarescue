@@ -41,7 +41,9 @@ def getLocError(data):
         return 10000
 
 def read_data():
-    df = pd.read_json('data/data.json')
+    df = pd.read_json('data/test.json')
+    df['latlng'].replace('', np.nan, inplace=True)
+    df.dropna(subset=['latlng'], inplace=True)
     df['LatValid'] = df['latlng']
     df['LonValid'] = df['latlng']
     df['LatValid'] = df['latlng'].apply(getLat)

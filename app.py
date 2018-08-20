@@ -45,6 +45,7 @@ app = dash.Dash()
 server = app.server
 
 data_cl = DataReader('data/data.json')
+get_updated_info = data_cl.getLastEntry()
 
 def get_layout():
     layout = html.Div(style={'backgroundColor': colors['background']},
@@ -52,7 +53,7 @@ def get_layout():
             html.Div(
                 children =[
                     html.H3(
-                        children='Kerala Rescue Dashboard',
+                        children='Kerala Rescue Dashboard (Data updated on ' + get_updated_info + ')',
                         style={
                         'textAlign': 'left',
                         'color': colors['text'],

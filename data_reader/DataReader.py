@@ -86,6 +86,11 @@ class DataReader:
         self.df_filtered = df
         return df
 
+    def getLastEntry(self):
+        time = self.df.datetime.max()
+        return "{:%B %d, %Y}".format(time) + " at %s:%s" % (time.hour, time.minute)
+
+
     def get_plot_per_dist(self,list_requirements, rad_value, dist):
         df = self.df_filtered
         df = df[df.district == dist]

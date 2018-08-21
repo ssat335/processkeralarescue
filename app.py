@@ -11,6 +11,7 @@ import json
 
 import pandas as pd
 from data_reader.DataReader import DataReader
+from data_reader.CampDataReader import CampDataReader
 
 count = 0
 colors = {
@@ -43,13 +44,42 @@ def get_hover_data(df):
 # DASH APP
 app = dash.Dash()
 server = app.server
+app.config['suppress_callback_exceptions']=True
 
 data_cl = DataReader('data/data.json')
 get_updated_info = data_cl.getLastEntry()
 
-def get_layout():
+data_relief = CampDataReader('data/camp_details/output.xlsx')
+
+def get_menu():
+    menu = html.Div([
+
+        dcc.Link('Click here for Rescue Dashboard |', href='/rescue', className="tab first", \
+        style = {
+            'width' : '50%',
+            'margin-left':'0%',
+            'font-size':'160%'
+            }
+        ),
+
+        dcc.Link('| Click here for Relief Camps Dashboard ', href='/relief', className="tab", \
+        style = {
+            'width' : '50%',
+            'margin-left':'0%',
+            'align':'right',
+            'font-size':'160%'
+            }
+        ),
+
+    ], className="row ")
+    return menu
+
+def get_rescue():
     layout = html.Div(style={'backgroundColor': colors['background']},
         children=[
+
+            get_menu(),
+            html.Br(),
             html.Div(
                 children =[
                     html.H3(
@@ -179,7 +209,151 @@ def get_layout():
         )
     return layout
 
-app.layout = get_layout()
+def get_relief():
+    relief = html.Div(style={'backgroundColor': colors['background']},
+        children=[
+
+            get_menu(),
+            html.Div(
+                children =[
+                    html.H3(
+                        children='Kerala Relief Camp Details Dashboard',
+                        style={
+                        'textAlign': 'left',
+                        'color': colors['text'],
+                        'font-family': 'Poppins',
+                        }
+                    ),
+                    html.Div(children='  ', style={
+                        'textAlign': 'left',
+                        'color': colors['text'],
+                    }),
+                    html.Br(),
+                    html.Div(
+                        children=[
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            dcc.Dropdown(id='people_type',
+                                                multi=True,
+                                                value=['Total people'],
+                                                options=[{'label': 'All People', 'value':'Total people'}]),
+                                        ], className='twelve columns' )
+                            ], className='row' ),
+
+                            html.Br(),
+
+                            html.Div(children=
+                                [
+                                    dcc.Graph(
+                                    id='graph-districts',
+                                    config={
+                                        'displayModeBar': False
+                                        }
+                                    ),
+                                ],
+                                className='column',
+                                style = {
+                                    'width' : '50%',
+                                    'margin-left':'0%',
+                                    'align':'center'
+                                    }
+                                ),
+                            html.Div(children=
+                                    [
+                                        dcc.Graph(
+                                        id='graph-taluk',
+                                        config={
+                                            'displayModeBar': False
+                                            }
+                                        ),
+                                    ],
+                                    className='column',
+                                    style = {
+                                        'width' : '50%',
+                                        'margin-left':'0%'
+                                        }
+                                    ),
+                        ],
+                        className='row'
+                    ),
+                    html.Div(
+
+                        children=[
+                            html.Div([
+                                    dcc.Graph(
+                                    id='table-dist-details',
+                                    config={
+                                        'displayModeBar': False
+                                        }
+                                    ),
+                            ],
+                            className='column',
+                            style = {
+                                'width' : '50%',
+                                'margin':'0%'
+                                }
+                            ),
+                            html.Div(children=
+                                    [
+                                        dcc.Graph(
+                                        id='graph-village-heatmap',
+                                        config={
+                                            'displayModeBar': False
+                                            }
+                                        ),
+                                    ],
+                                    className='column',
+                                    style = {
+                                        'width' : '50%',
+                                        'margin-left':'0%'
+                                        }
+                                    ),
+
+                        ],
+                        className='twelve columns',
+                        style = {
+                            'width' : '100%',
+                            'margin-left':'0%'
+                            }
+                    ),
+
+                    ],
+                    style={
+                    'padding': '5px',
+                    }
+                ),
+            ]
+        )
+    return relief
+
+def get_nopage():
+    noPage = html.Div([  # 404
+
+        html.P(["404 Page not found"])
+
+    ], className="no-page")
+    return noPage
+# app.layout = get_rescue()
+
+# Describe the layout, or the UI, of the app
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+# Update page
+@app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/' or pathname == '/rescue':
+        return get_rescue()
+    elif pathname == '/relief':
+        return get_relief()
+    else:
+        return get_nopage()
+
 
 @app.callback(Output("map-graph", "figure"),
               [Input("incident_dropdown", "value"), Input('charts_radio', 'value')])
@@ -306,6 +480,126 @@ def update_map(dr_value, rad_value, clickData):
                 ),
                 zoom=6
             ),
+        )
+    )
+
+@app.callback(Output("graph-districts", "figure"),
+              [Input("people_type", "value")])
+def update_bar(dr_value):
+    d_series = data_relief.get_plot_data(dr_value)
+    values = d_series.sort_values(ascending=0)
+    return go.Figure(
+            data=[go.Bar(
+                y=values,
+                x=list(values.index),
+                marker={'color':'rgba(26, 118, 255, 0.5)',
+                      'line':{
+                        'color':'rgb(8,48,107)',
+                        'width':1.5,
+                        }
+                }
+            )
+            ],
+            layout=go.Layout(
+                title='People in Camps by District (Click to see detailed location in bottom graph)',
+                barmode='grouped',
+                bargroupgap=0.2,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
+        )
+
+@app.callback(
+    Output('graph-taluk', 'figure'), [Input("people_type", "value"),\
+     Input('graph-districts', 'clickData')])
+def update_bar_location(dr_value, clickData):
+    district = clickData['points'][0]['x']
+    d_series = data_relief.get_plot_per_dist(dr_value, district)
+    values = d_series.sort_values(ascending=0)
+    return go.Figure(
+            data=[go.Bar(
+                y=values,
+                x=list(values.index),
+                hoverinfo='text',
+                marker={'color':'rgba(26, 118, 255, 0.5)',
+                      'line':{
+                        'color':'rgb(8,48,107)',
+                        'width':1.5,
+                        }
+                }
+            )
+            ],
+            layout=go.Layout(
+                title='People by Taluk for ' + district + ' district',
+                barmode='grouped',
+                bargroupgap=0.2,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
+        )
+
+@app.callback(
+    Output('table-dist-details', 'figure'),
+    [Input('graph-districts', 'clickData')])
+def update_table(clickData):
+    district = clickData['points'][0]['x']
+    df = data_relief.get_all_dist_data(district)
+    total_camp_count = df.count()['Camp Name']
+    total_people = df.sum()['Total People']
+    total_males = df.sum()['Total Males']
+    total_females = df.sum()['Total Females']
+    return go.Figure(
+        data=[go.Table(
+            header=dict(values=['', 'Values'],
+                        line = dict(color='#7D7F80'),
+                        fill = dict(color='#a1c3d1'),
+                        align = ['left'] * 5),
+            cells=dict(values=[['# of Camps', '# of People Displaced', '# of Males', '# of Females'],
+            [total_camp_count, total_people, total_males, total_females]],
+                       line = dict(color='#7D7F80'),
+                       fill = dict(color='#EDFAFF'),
+                       align = ['left'] * 5))
+
+        ],
+        layout=go.Layout(
+            title = 'Details for ' + district + ' district',
+            font=dict(family='Poppins', size=12, color='#7f7f7f')
+        )
+    )
+
+@app.callback(
+    Output('graph-village-heatmap', 'figure'),
+    [Input('graph-districts', 'clickData')])
+def update_table(clickData):
+    district = clickData['points'][0]['x']
+    df = data_relief.get_all_dist_data(district)
+    df = df[np.isfinite(df['Total People'])]
+    df = df.groupby('Village').sum()
+    return go.Figure(
+            data=[go.Heatmap(
+                z=df.values,
+                x=df.columns,
+                y=df.index,
+                colorscale='magma',
+                hoverinfo='text',
+                )
+            ],
+        layout=go.Layout(
+            title = 'Heat map of count of people by village in ' + district + ' district',
+            xaxis=dict(
+                showgrid=False,
+                zeroline=False,
+                showline=False,
+            ),
+            yaxis=dict(
+                showgrid=False,
+                zeroline=False,
+                showline=False,
+            ),
+            autosize=True,
+            height=550,
+            hovermode='closest',
+            margin=go.Margin(l=150, r=0, t=50),
         )
     )
 

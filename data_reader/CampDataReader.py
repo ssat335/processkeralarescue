@@ -41,5 +41,11 @@ class CampDataReader:
         df = df[df.district == dist]
         return df
 
+    def get_all_taluk_data(self,dist, taluk):
+        df = self.df
+        df = df[df.district == dist]
+        df = df[df.taluk == taluk]
+        return df
+
 if __name__ == '__main__':
     main()

@@ -529,7 +529,7 @@ def update_bar_location(dr_value, clickData):
             )
             ],
             layout=go.Layout(
-                title='People by Taluk for ' + district + ' district',
+                title='People by Taluk for ' + district + ' district (Click here for detail village info below)',
                 barmode='grouped',
                 bargroupgap=0.2,
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -568,10 +568,11 @@ def update_table(clickData):
 
 @app.callback(
     Output('graph-village-heatmap', 'figure'),
-    [Input('graph-districts', 'clickData')])
-def update_table(clickData):
-    district = clickData['points'][0]['x']
-    df = data_relief.get_all_dist_data(district)
+    [Input('graph-taluk', 'clickData'), Input('graph-districts', 'clickData')])
+def update_table(clickDataT, clickDataD):
+    taluk = clickDataT['points'][0]['x']
+    district = clickDataD['points'][0]['x']
+    df = data_relief.get_all_taluk_data(district, taluk)
     df = df[np.isfinite(df['total_people'])]
     df = df.groupby('village').sum()
     return go.Figure(
@@ -583,7 +584,7 @@ def update_table(clickData):
                 )
             ],
         layout=go.Layout(
-            title = 'Heat map of count of people by village in ' + district + ' district',
+            title = 'Heat map of count of people by village in ' + taluk + ' Taluk (' + district + 'district)',
             xaxis=dict(
                 showgrid=False,
                 zeroline=False,

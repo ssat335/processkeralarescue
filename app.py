@@ -49,7 +49,7 @@ app.config['suppress_callback_exceptions']=True
 data_cl = DataReader('data/data.json')
 get_updated_info = data_cl.getLastEntry()
 
-data_relief = CampDataReader('data/camp_details/output.xlsx')
+data_relief = CampDataReader('data/camp_details/rescuecamp.csv')
 
 def get_menu():
     menu = html.Div([
@@ -520,7 +520,6 @@ def update_bar_location(dr_value, clickData):
             data=[go.Bar(
                 y=values,
                 x=list(values.index),
-                hoverinfo='text',
                 marker={'color':'rgba(26, 118, 255, 0.5)',
                       'line':{
                         'color':'rgb(8,48,107)',
@@ -544,10 +543,10 @@ def update_bar_location(dr_value, clickData):
 def update_table(clickData):
     district = clickData['points'][0]['x']
     df = data_relief.get_all_dist_data(district)
-    total_camp_count = df.count()['Camp Name']
-    total_people = df.sum()['Total People']
-    total_males = df.sum()['Total Males']
-    total_females = df.sum()['Total Females']
+    total_camp_count = df.count()['name']
+    total_people = df.sum()['total_people']
+    total_males = df.sum()['total_males']
+    total_females = df.sum()['total_females']
     return go.Figure(
         data=[go.Table(
             header=dict(values=['', 'Values'],
@@ -573,15 +572,14 @@ def update_table(clickData):
 def update_table(clickData):
     district = clickData['points'][0]['x']
     df = data_relief.get_all_dist_data(district)
-    df = df[np.isfinite(df['Total People'])]
-    df = df.groupby('Village').sum()
+    df = df[np.isfinite(df['total_people'])]
+    df = df.groupby('village').sum()
     return go.Figure(
             data=[go.Heatmap(
                 z=df.values,
                 x=df.columns,
                 y=df.index,
                 colorscale='magma',
-                hoverinfo='text',
                 )
             ],
         layout=go.Layout(

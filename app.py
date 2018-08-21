@@ -577,20 +577,24 @@ def update_table(clickData):
     total_females = df.sum()['total_females']
     return go.Figure(
         data=[go.Table(
-            header=dict(values=['', 'Values'],
-                        line = dict(color='#7D7F80'),
-                        fill = dict(color='#a1c3d1'),
-                        align = ['left'] * 5),
+            header=dict(values=['', ''],
+                        line = dict(color='white'),
+                        # fill = dict(color='#a1c3d1'),
+                        align = ['center'] * 5,
+                        font = dict(size = 20),
+                        height = 40),
             cells=dict(values=[['# of Camps', '# of People Displaced', '# of Males', '# of Females'],
-            [total_camp_count, total_people, total_males, total_females]],
-                       line = dict(color='#7D7F80'),
+                    [total_camp_count, total_people, total_males, total_females]],
+                       line = dict(color='white'),
                        fill = dict(color='#EDFAFF'),
-                       align = ['left'] * 5))
-
+                       align = ['left'] * 5,
+                       font = dict(size = 20),
+                       height = 40),
+                   ),
         ],
         layout=go.Layout(
-            title = 'Details for ' + district + ' district',
-            font=dict(family='Poppins', size=12, color='#7f7f7f')
+            title = district + ' district',
+            font=dict(family='Poppins', size=25)
         )
     )
 

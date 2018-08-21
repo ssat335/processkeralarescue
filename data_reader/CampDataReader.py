@@ -23,6 +23,9 @@ class CampDataReader:
        'total_females', 'total_infants']]
         # We are ignoring the location information more than 1000 meters
         return df
+        
+    def get_all_data(self):
+        return self.df
 
     def get_districts(self):
         return self.df['district'].unique()

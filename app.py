@@ -19,6 +19,29 @@ colors = {
     'text': 'rgb(77, 99, 127)'
 }
 
+def get_summary_figure():
+    df = data_relief.get_all_data()
+    total_camp_count = df.count()['name']
+    total_people = df.sum()['total_people']
+    total_males = df.sum()['total_males']
+    total_females = df.sum()['total_females']
+    return go.Figure(
+        data=[go.Table(
+            header=dict(values=['# of Camps', '# of People Displaced', '# of Males', '# of Females'],
+                        line = dict(color='white'),
+                        fill = dict(color='#a1c3d1'),
+                        align = ['center'] * 5,
+                        font = dict(color = 'rgb(77, 99, 127)', size = 30),
+                        height = 40),
+            cells=dict(values=[[total_camp_count], [total_people], [total_males], [total_females]],
+                       line = dict(color='white'),
+                       fill = dict(color='#EDFAFF'),
+                       align = ['center'] * 5,
+                       font = dict(color = 'rgb(77, 99, 127)', size = 25),
+                       height = 40))
+
+        ],
+    )
 
 # HELPER METHODS
 
@@ -212,7 +235,6 @@ def get_rescue():
 def get_relief():
     relief = html.Div(style={'backgroundColor': colors['background']},
         children=[
-
             get_menu(),
             html.Div(
                 children =[
@@ -230,18 +252,24 @@ def get_relief():
                     }),
                     html.Br(),
                     html.Div(
-                        children=[
+                    [
+                    dcc.Graph(
+                        id='graph-summary',
+                        figure= get_summary_figure(),
+                        config={
+                            'displayModeBar': False
+                            }
+                        ),
+                    ], className='row',),
+                    html.Div(
+                    children=[
                             html.Div(
-                                [
-                                    html.Div(
-                                        [
-                                            dcc.Dropdown(id='people_type',
-                                                multi=True,
-                                                value=['Total people'],
-                                                options=[{'label': 'All People', 'value':'Total people'}]),
-                                        ], className='twelve columns' )
+                            [
+                                dcc.Dropdown(id='people_type',
+                                    multi=True,
+                                    value=['Total people'],
+                                    options=[{'label': 'All People', 'value':'Total people'}]),
                             ], className='row' ),
-
                             html.Br(),
 
                             html.Div(children=
@@ -601,6 +629,7 @@ def update_table(clickDataT, clickDataD):
             margin=go.Margin(l=150, r=0, t=50),
         )
     )
+
 
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
                 "https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",

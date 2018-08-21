@@ -2,7 +2,7 @@
 
 # processkeralarescue
 Repository aims to develop a dashboard to optimise and sort rescue operations. See initial implementation in
-https://processkeralarescue.herokuapp.com/.
+https://process.keralarescue.in/.
 
 ## Running natively
 ### Prerequisites

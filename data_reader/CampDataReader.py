@@ -24,6 +24,7 @@ class CampDataReader:
 
     def _read_file(self):
         df = pd.read_excel(self.filename)
+        df.drop_duplicates(inplace=True)
         df['Total Infants'] = df['Total Infants'].apply(self._process_column)
         df['Total Males'] = df['Total Males'].apply(self._process_column)
         df['Total Females'] = df['Total Females'].apply(self._process_column)
